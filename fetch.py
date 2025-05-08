@@ -1,26 +1,48 @@
 import feedparser, sqlite3, datetime, pathlib, json, traceback, requests
 
 # ========= 設定 =========
-MAX_PER_DAY = 5            # Slack に出す件数
-DB           = "seen.db"
-OUT          = "items.json"
+MAX_PER_DAY = 10   # 例えば10件に増やす
+DB  = "seen.db"
+OUT = "items.json"
 
-# --- RSS / Atom フィード ---
 FEEDS = [
+    # ── 論文 ─────────────────────
     "https://export.arxiv.org/rss/cs.LG",
+
+    # ── 国内ニュース ─────────────
     "https://news.mynavi.jp/techplus/rss",
-    "https://ledge.ai/feed",
+    "https://atmarkit.itmedia.co.jp/rss/all.rdf",
+    "https://metaversesouken.com/ai/feed",
+    "https://ledge.ai/feed/",
+    "https://www.sbbit.jp/rss/all",
+    "https://xtech.nikkei.com/rss/pickup.rdf",
+    "https://www.itmedia.co.jp/rss/2.0/itmedia_all.xml",
+    "https://japan.cnet.com/rss/index.rdf",
+    "https://japan.zdnet.com/rss/index.rdf",
+    "https://thebridge.jp/feed",
+    "https://it.impress.co.jp/rss/atom.xml",
+    "https://ainow.ai/feed",
+    "https://aismiley.co.jp/feed",
+    "https://chatgpt-lab.com/feed",
+
+    # ── Qiita タグ ────────────────
+    "https://qiita.com/tags/GenerativeAI/feed",
 ]
 
-# --- Twitter を RSSHub 経由で取得 ---
+# --- Twitter は RSSHub 経由で ---
 TW_HANDLES = [
     "taiyo_ai_gakuse",
     "ytiskw",
     "Aoi_genai",
+    "usutaku_channel",
+    "SuguruKun_ai",
+    "shota7180",
+    "MacopeninSUTABA",
 ]
-RSSHUB = "https://rsshub.app/twitter/user/{}"   # 公開ノード
+RSSHUB = "https://rsshub.app/twitter/user/{}"
 FEEDS += [RSSHUB.format(u) for u in TW_HANDLES]
-# ===========================
+# =========================
+
 
 
 def seen(cur, url: str) -> bool:
