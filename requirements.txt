@@ -1,5 +1,4 @@
 feedparser
-snscrape
 beautifulsoup4
 transformers
 torch
