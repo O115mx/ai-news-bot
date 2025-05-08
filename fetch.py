@@ -57,11 +57,13 @@ def main():
     new_items = []
 
     for url in FEEDS:
-        try:
-            feed = feedparser.parse(url)
-            if feed.bozo:   # RSS 解析エラー
-                print("⚠️  feed parse error:", url)
-                continue
+    try:
+        feed = feedparser.parse(url)
+
+        # ↓↓ bozo を無視して entries が空ならスキップに変更 ↓↓
+        if not feed.entries:
+            print("⚠️  empty feed:", url)
+            continue
             for e in feed.entries:
                 link = getattr(e, "link", None)
                 if not link or seen(cur, link):
