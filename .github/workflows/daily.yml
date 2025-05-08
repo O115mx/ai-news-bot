@@ -1,0 +1,18 @@
+name: AI Daily Brief
+on:
+  workflow_dispatch:        # ← 手動トリガー用（まずはテスト）
+  schedule:
+    - cron: '0 22 * * *'    # 毎日 07:00 JST (22:00 UTC)
+
+jobs:
+  run:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: { python-version: '3.11' }
+      - run: pip install -r requirements.txt
+      - run: python fetch.py
+      - run: python summarize.py
+      - run: python post.py
+        env: { SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK }} }
