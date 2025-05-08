@@ -1,8 +1,33 @@
-name: test-hello
+name: AI Daily Brief
+
 on:
-  workflow_dispatch:
+  workflow_dispatch:  # ← 手動トリガー
+  schedule:
+    - cron: '0 22 * * *'   # 毎日 07:00 JST
+
 jobs:
-  hello:
+  run:
     runs-on: ubuntu-latest
+
     steps:
-      - run: echo "🎉 Hello from GitHub Actions"
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install deps
+        run: pip install -r requirements.txt
+
+      - name: Fetch items
+        run: python fetch.py
+
+      - name: Summarize items
+        run: python summarize.py
+
+      - name: Post to Slack
+        run: python post.py
+        env:
+          SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK }}
